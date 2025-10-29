@@ -10,17 +10,8 @@ import {
 
 export default function Home() {
   return (
-    <div>
-      <SignedOut>
-        <SignInButton mode="modal">
-          <Button>Sign in</Button>
-        </SignInButton>
-        <SignUpButton></SignUpButton>
-      </SignedOut>
-      <SignedIn>
-        <UserButton />
-      </SignedIn>
-      <ModeToggle />
+    <div className="m-4">
+      <h1>Homepage content</h1>
     </div>
   );
 }
