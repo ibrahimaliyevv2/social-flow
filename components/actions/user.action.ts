@@ -38,7 +38,7 @@ export const syncUser = async () => {
     } catch (err) {
         console.log("Error in syncUser", err)
     }
-}
+};
 
 export const getUserByClerkId = async (clerkId: string) => {
     return prisma.user.findUnique({
@@ -55,4 +55,14 @@ export const getUserByClerkId = async (clerkId: string) => {
             }
         }
     })
-}
+};
+
+export const getUserIdFromDB = async () => {
+    const {userId:clerkId} = await auth(); // User id in clerk
+    if(!clerkId) throw new Error("Unauthenticated");
+
+    const user = await getUserByClerkId(clerkId);
+    if(!user) throw new Error("User not found");
+
+    return user.id;
+};

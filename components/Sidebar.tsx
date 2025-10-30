@@ -27,7 +27,9 @@ const Sidebar = async () => {
               </Avatar>
 
               <div className="mt-4 space-y-1">
-                <h3 className="font-semibold">{user.name}</h3>
+                <h3 className="font-semibold">
+                  {user.name} {user.surname}
+                </h3>
                 <p className="text-sm text-muted-foreground">{user.username}</p>
               </div>
             </Link>
