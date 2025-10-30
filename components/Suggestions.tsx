@@ -42,7 +42,7 @@ const Suggestions = async () => {
                     href={`/profile/${user.username}`}
                     className="font-medium cursor-pointer"
                   >
-                    {user.name}
+                    {user.name} {user.surname}
                   </Link>
                   <p className="text-muted-foreground">@{user.username}</p>
                   <p className="text-muted-foreground">
