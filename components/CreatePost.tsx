@@ -62,7 +62,7 @@ const CreatePost = () => {
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="text-muted-foreground hover:text-primary"
+                className="text-muted-foreground hover:text-primary cursor-pointer"
                 onClick={() => setShowImageUpload(!showImageUpload)}
                 disabled={isPosting}
               >
@@ -71,7 +71,7 @@ const CreatePost = () => {
               </Button>
             </div>
             <Button
-              className="flex items-center"
+              className="flex items-center cursor-pointer disabled:cursor-alias"
               onClick={handleSubmit}
               disabled={(!content.trim() && !imageUrl) || isPosting}
             >
