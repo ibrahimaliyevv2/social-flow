@@ -89,8 +89,9 @@ model Follows{
   follower User @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
   following User @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
 
-  @@index([followerId, followingId])
-  @@id([followerId, followingId])
+  @@index([followerId, followingId]) // composite non-unique index - is used to speed up queries that filter or sort by these fields together.
+  @@id([followerId, followingId]) // composite primary key - user can only follow another user once 
+  // (values must be unique across all records in the table and it serves as the unique identifier (primary key) for each record)
 }
 
 model Notification {
