@@ -39,3 +39,20 @@ export const syncUser = async () => {
         console.log("Error in syncUser", err)
     }
 }
+
+export const getUserByClerkId = async (clerkId: string) => {
+    return prisma.user.findUnique({
+        where: {
+            clerkId: clerkId
+        },
+        include: {
+            _count: {
+                select: {
+                    followers: true,
+                    following: true,
+                    posts: true
+                }
+            }
+        }
+    })
+}
