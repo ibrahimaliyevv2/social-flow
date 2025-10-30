@@ -126,7 +126,7 @@ export const toggleLike = async (postId: string) => {
               prisma.notification.create({
                 data: {
                   type: "LIKE",
-                  userId: post.authorId, // recipient (post author)
+                  userId: post.authorId, // post author
                   creatorId: loggedInUserId, // person who liked
                   postId,
                 },
@@ -141,5 +141,79 @@ export const toggleLike = async (postId: string) => {
   } catch (err) {
     console.error("Error in toggleLike:", err);
     return { success: false, message: "Error in toggle like" };
+  }
+}
+
+export const createComment = async (postId: string, content: string) => {
+  try {
+    const loggedInUserId = await getUserIdFromDB();
+
+    if (!loggedInUserId) return;
+    if (!content) throw new Error("Content is required");
+
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+      select: { authorId: true },
+    });
+
+    if (!post) throw new Error("Post not found");
+
+    // Create comment and notification in a transaction
+    const [comment] = await prisma.$transaction(async (tx) => {
+      // Create comment first
+      const newComment = await tx.comment.create({
+        data: {
+          content,
+          authorId: loggedInUserId,
+          postId,
+        },
+      });
+
+      // Create notification if commenting on someone else's post
+      if (post.authorId !== loggedInUserId) {
+        await tx.notification.create({
+          data: {
+            type: "COMMENT",
+            userId: post.authorId,
+            creatorId: loggedInUserId,
+            postId,
+            commentId: newComment.id,
+          },
+        });
+      }
+
+      return [newComment];
+    });
+
+    revalidatePath(`/`);
+    return { success: true, comment };
+  } catch (err) {
+    console.error("Failed to create comment:", err);
+    return { success: false, message: "Failed to create comment" };
+  }
+}
+
+export const deletePost = async (postId: string) => {
+  try {
+    const loggedInUserId = await getUserIdFromDB();
+    if (!loggedInUserId) return;
+
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+      select: { authorId: true },
+    });
+
+    if (!post) throw new Error("Post not found");
+    if (post.authorId !== loggedInUserId) throw new Error("Unauthorized - no delete permission");
+
+    await prisma.post.delete({
+      where: { id: postId },
+    });
+
+    revalidatePath("/");
+    return { success: true };
+  } catch (err) {
+    console.error("Failed to delete post:", err);
+    return { success: false, message: "Failed to delete post" };
   }
 }
