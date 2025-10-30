@@ -7,6 +7,9 @@ import { revalidatePath } from "next/cache";
 export const createPost = async (content: string, imageUrl: string) => {
     try {
         const userId = await getUserIdFromDB();
+
+        if(!userId) return;
+
         const post = await prisma.post.create({
             data:{
                 content: content,
@@ -22,3 +25,121 @@ export const createPost = async (content: string, imageUrl: string) => {
         return {success: false, message: "Failed to create post"};
     }
 };
+
+export const getPosts = async () => {
+    try {
+        const posts = await prisma.post.findMany({
+            orderBy: {
+                createdAt: "desc", // latest posts at top
+            },
+            include: {
+                author: { // including post creator info 
+                    select: {
+                        id: true,
+                        name: true,
+                        surname: true,
+                        username: true,
+                        image: true,
+
+                    }
+                },
+                comments: {
+                    include: {
+                        author: {
+                            select: {
+                                id: true,
+                                name: true,
+                                surname: true,
+                                username: true,
+                                image: true,
+                            }
+                        }
+                    },
+                    orderBy: {
+                        createdAt: "asc"
+                    }
+                },
+                likes: {
+                    select: {
+                        userId: true
+                    }
+                },
+                _count: {
+                    select: {
+                        likes: true,
+                        comments: true
+                    }
+                }
+            }
+        });
+
+        return posts;
+    } catch (err) {
+        console.log("Error in getPosts", err);
+        return {success: false, message: "Error in getting posts"};
+    }
+}
+
+export const toggleLike = async (postId: string) => {
+  try {
+    const loggedInUserId = await getUserIdFromDB();
+    if (!loggedInUserId) return;
+
+    // check if like exists
+    const alreadyLiked = await prisma.like.findUnique({
+      where: {
+        userId_postId: {
+          userId: loggedInUserId,
+          postId,
+        },
+      },
+    });
+
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+      select: { authorId: true },
+    });
+
+    if (!post) throw new Error("Post not found");
+
+    if (alreadyLiked) {
+      // unlike
+      await prisma.like.delete({
+        where: {
+          userId_postId: {
+            userId: loggedInUserId,
+            postId,
+          },
+        },
+      });
+    } else {
+      // like and create notification (only if liking someone else's post)
+      await prisma.$transaction([
+        prisma.like.create({
+          data: {
+            userId: loggedInUserId,
+            postId,
+          },
+        }),
+        ...(post.authorId !== loggedInUserId
+          ? [
+              prisma.notification.create({
+                data: {
+                  type: "LIKE",
+                  userId: post.authorId, // recipient (post author)
+                  creatorId: loggedInUserId, // person who liked
+                  postId,
+                },
+              }),
+            ]
+          : []),
+      ]);
+    };
+
+    revalidatePath("/");
+    return { success: true };
+  } catch (err) {
+    console.error("Error in toggleLike:", err);
+    return { success: false, message: "Error in toggle like" };
+  }
+}

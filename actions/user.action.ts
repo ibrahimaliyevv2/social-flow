@@ -60,7 +60,7 @@ export const getUserByClerkId = async (clerkId: string) => {
 
 export const getUserIdFromDB = async () => {
     const {userId:clerkId} = await auth(); // User id in clerk
-    if(!clerkId) throw new Error("Unauthenticated");
+    if(!clerkId) return null;
 
     const user = await getUserByClerkId(clerkId);
     if(!user) throw new Error("User not found");
@@ -71,6 +71,8 @@ export const getUserIdFromDB = async () => {
 export const getUserSuggestions = async () => {
     try {
         const userId = await getUserIdFromDB();
+
+        if(!userId) return [];
 
         const suggestedUsers = await prisma.user.findMany({
             where: {
@@ -110,14 +112,16 @@ export const getUserSuggestions = async () => {
 
 export const toggleFollow = async (userId: string) => {
     try {
-        const loggedInUser = await getUserIdFromDB(); // myself (logged in user)
+        const loggedInUserId = await getUserIdFromDB(); // myself (logged in user)
 
-        if(loggedInUser === userId) throw new Error("You can not follow yourself"); 
+        if(!loggedInUserId) return;
+
+        if(loggedInUserId === userId) throw new Error("You can not follow yourself"); 
 
         const alreadyFollows = await prisma.follows.findUnique({
             where: {
                 followerId_followingId: {
-                    followerId: loggedInUser,
+                    followerId: loggedInUserId,
                     followingId: userId
                 }
             }
@@ -128,7 +132,7 @@ export const toggleFollow = async (userId: string) => {
             await prisma.follows.delete({
                 where: {
                     followerId_followingId: {
-                        followerId: loggedInUser,
+                        followerId: loggedInUserId,
                         followingId: userId
                     }
                 }
@@ -141,7 +145,7 @@ export const toggleFollow = async (userId: string) => {
             await prisma.$transaction([ 
                 prisma.follows.create({
                     data: {
-                        followerId: loggedInUser,
+                        followerId: loggedInUserId,
                         followingId: userId
                     }
                 }),
@@ -149,7 +153,7 @@ export const toggleFollow = async (userId: string) => {
                     data: {
                         type: "FOLLOW",
                         userId: userId, // follow olunan user-ə notification gəlir ki, sən follow olundun (follow edilən user)
-                        creatorId: loggedInUser // səbəbkar (follow edən user)
+                        creatorId: loggedInUserId // səbəbkar (follow edən user)
                     }
                 })
             ]);
