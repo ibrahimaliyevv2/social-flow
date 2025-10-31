@@ -129,7 +129,7 @@ const NotificationsPage = () => {
 
                     <p className="text-sm text-muted-foreground pl-6">
                       {formatDistanceToNow(new Date(notification.createdAt), {
-                        addSuffix: true,
+                        addSuffix: true, // axırına avtomatik ago sözü əlavə edir
                       })}
                     </p>
                   </div>
