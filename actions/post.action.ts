@@ -76,7 +76,7 @@ export const getPosts = async () => {
         return posts;
     } catch (err) {
         console.log("Error in getPosts", err);
-        return {success: false, message: "Error in getting posts"};
+        throw new Error("Failed to fetch posts");
     }
 }
 
