@@ -119,7 +119,8 @@ const PostCard = ({
                     href={`/profile/${post.author.username}`}
                     className="font-semibold truncate"
                   >
-                    {post.author.name} {post.author.surname}
+                    {post.author.name}
+                    {post.author.surname ? ` ${post.author.surname}` : ""}
                   </Link>
                   <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                     <Link href={`/profile/${post.author.username}`}>
@@ -147,7 +148,7 @@ const PostCard = ({
 
           {post.image && (
             <div className="rounded-lg overflow-hidden">
-              <img
+              <img // change to next Image component
                 src={post.image}
                 alt="Post content"
                 className="w-full h-auto object-cover"
@@ -216,7 +217,7 @@ const PostCard = ({
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                         <span className="font-medium text-sm">
-                          {comment.author.name}
+                          {comment.author.name} {comment.author.surname}
                         </span>
                         <span className="text-sm text-muted-foreground">
                           @{comment.author.username}

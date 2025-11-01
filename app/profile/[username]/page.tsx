@@ -4,6 +4,7 @@ import {
   getUserPosts,
   isFollowing,
 } from "@/actions/profile.action";
+import { getUserIdFromDB } from "@/actions/user.action";
 import { notFound } from "next/navigation";
 import ProfileContent from "./ProfileContent";
 
@@ -34,11 +35,13 @@ const ProfilePage = async ({
 
   if (!user) return notFound(); // User bazada tapılmasa default-da olan (özümüzün hazırladığımız) not found page-imizi qaytaracaq
 
-  const [posts, likedPosts, isLoggedInUserFollowing] = await Promise.all([
-    getUserPosts(user.id),
-    getUserLikedPosts(user.id),
-    isFollowing(user.id),
-  ]);
+  const [posts, likedPosts, isLoggedInUserFollowing, loggedInUserId] =
+    await Promise.all([
+      getUserPosts(user.id),
+      getUserLikedPosts(user.id),
+      isFollowing(user.id),
+      getUserIdFromDB(),
+    ]);
 
   return (
     <ProfileContent
@@ -46,6 +49,7 @@ const ProfilePage = async ({
       posts={posts}
       likedPosts={likedPosts}
       isFollowing={isLoggedInUserFollowing}
+      loggedInUserId={loggedInUserId}
     />
   );
 };

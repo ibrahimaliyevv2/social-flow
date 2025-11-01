@@ -47,6 +47,7 @@ export const getUserPosts = async (userId: string) => {
           select: {
             id: true,
             name: true,
+            surname: true,
             username: true,
             image: true,
           },
@@ -57,6 +58,7 @@ export const getUserPosts = async (userId: string) => {
               select: {
                 id: true,
                 name: true,
+                surname: true,
                 username: true,
                 image: true,
               },
@@ -105,6 +107,7 @@ export const getUserLikedPosts = async(userId: string) => {
           select: {
             id: true,
             name: true,
+            surname: true,
             username: true,
             image: true,
           },
@@ -115,6 +118,7 @@ export const getUserLikedPosts = async(userId: string) => {
               select: {
                 id: true,
                 name: true,
+                surname: true,
                 username: true,
                 image: true,
               },
@@ -154,6 +158,7 @@ export const updateProfile = async (formData: FormData) => {
     if (!clerkId) throw new Error("Unauthorized");
 
     const name = formData.get("name") as string;
+    const surname = formData.get("surname") as string;
     const bio = formData.get("bio") as string;
     const location = formData.get("location") as string;
     const website = formData.get("website") as string;
@@ -162,6 +167,7 @@ export const updateProfile = async (formData: FormData) => {
       where: { clerkId },
       data: {
         name,
+        surname,
         bio,
         location,
         website,

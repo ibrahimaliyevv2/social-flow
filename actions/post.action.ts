@@ -33,14 +33,13 @@ export const getPosts = async () => {
                 createdAt: "desc", // latest posts at top
             },
             include: {
-                author: { // including post creator info 
+                author: { // including post creator info
                     select: {
                         id: true,
                         name: true,
                         surname: true,
                         username: true,
                         image: true,
-
                     }
                 },
                 comments: {

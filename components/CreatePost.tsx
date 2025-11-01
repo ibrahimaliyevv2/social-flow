@@ -24,7 +24,7 @@ const CreatePost = () => {
 
     try {
       const response = await createPost(content, imageUrl);
-      if (response.success) {
+      if (response?.success) {
         setContent("");
         setImageUrl("");
         setShowImageUpload(false);
