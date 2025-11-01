@@ -2,9 +2,12 @@
 
 import {
   createComment,
+  deleteComment,
   deletePost,
   getPosts,
   toggleLike,
+  updateComment,
+  updatePost,
 } from "@/actions/post.action";
 import { SignInButton, useUser } from "@clerk/nextjs";
 import { useState } from "react";
@@ -16,10 +19,12 @@ import { formatDistanceToNow } from "date-fns";
 import { DeleteAlertDialog } from "./DeleteAlertDialog";
 import { Button } from "./ui/button";
 import {
+  EditIcon,
   HeartIcon,
   LogInIcon,
   MessageCircleIcon,
   SendIcon,
+  TrashIcon,
 } from "lucide-react";
 import { Textarea } from "./ui/textarea";
 
@@ -43,6 +48,12 @@ const PostCard = ({
   const [isLiking, setIsLiking] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [isEditingPost, setIsEditingPost] = useState(false);
+  const [editedPostContent, setEditedPostContent] = useState(
+    post.content || ""
+  );
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editedCommentContent, setEditedCommentContent] = useState("");
 
   const [hasLiked, setHasLiked] = useState(
     post.likes.some((like) => like.userId === loggedInAs)
@@ -101,10 +112,57 @@ const PostCard = ({
     }
   };
 
+  const handleEditPost = async () => {
+    if (!editedPostContent.trim()) return;
+    try {
+      const response = await updatePost(post.id, editedPostContent);
+      if (response?.success) {
+        toast.success("Post updated successfully");
+        setIsEditingPost(false);
+      } else {
+        throw new Error(response?.message);
+      }
+    } catch (err) {
+      console.log("Error while updating post", err);
+      toast.error("Failed to update post");
+    }
+  };
+
+  const handleEditComment = async (commentId: string) => {
+    if (!editedCommentContent.trim()) return;
+    try {
+      const response = await updateComment(commentId, editedCommentContent);
+      if (response?.success) {
+        toast.success("Comment updated successfully");
+        setEditingCommentId(null);
+        setEditedCommentContent("");
+      } else {
+        throw new Error(response?.message);
+      }
+    } catch (err) {
+      console.log("Error while updating comment", err);
+      toast.error("Failed to update comment");
+    }
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      const response = await deleteComment(commentId);
+      if (response?.success) {
+        toast.success("Comment deleted successfully");
+      } else {
+        throw new Error(response?.message);
+      }
+    } catch (err) {
+      console.log("Error while deleting comment", err);
+      toast.error("Failed to delete comment");
+    }
+  };
+
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-4 sm:p-6">
-        <div className="space-y-4">
+        <div>
           <div className="flex space-x-3 sm:space-x-4">
             <Link href={`/profile/${post.author.username}`}>
               <Avatar className="size-8 sm:size-10">
@@ -134,15 +192,54 @@ const PostCard = ({
                 </div>
                 {/* Check if current user is the post author */}
                 {loggedInAs === post.author.id && (
-                  <DeleteAlertDialog
-                    isDeleting={isDeleting}
-                    onDelete={handleDeletePost}
-                  />
+                  <div className="flex space-x-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setIsEditingPost(true)}
+                      className="text-muted-foreground hover:text-blue-500 cursor-pointer"
+                    >
+                      <EditIcon className="size-4" />
+                    </Button>
+                    <DeleteAlertDialog
+                      isDeleting={isDeleting}
+                      onDelete={handleDeletePost}
+                    />
+                  </div>
                 )}
               </div>
-              <p className="mt-2 text-sm text-foreground wrap-break-word">
-                {post.content}
-              </p>
+              {isEditingPost && loggedInAs === post.author.id ? (
+                <div className="mt-2">
+                  <Textarea
+                    value={editedPostContent}
+                    onChange={(e) => setEditedPostContent(e.target.value)}
+                    className="min-h-20 resize-none"
+                  />
+                  <div className="flex justify-end mt-2 space-x-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setIsEditingPost(false);
+                        setEditedPostContent(post.content || "");
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={handleEditPost}
+                      disabled={!editedPostContent.trim()}
+                    >
+                      Save
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <p className="mt-2 text-sm text-foreground wrap-break-word">
+                  {post.content}
+                </p>
+              )}
             </div>
           </div>
 
@@ -217,7 +314,10 @@ const PostCard = ({
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                         <span className="font-medium text-sm">
-                          {comment.author.name} {comment.author.surname}
+                          {comment.author.name}
+                          {comment.author.surname
+                            ? ` ${comment.author.surname}`
+                            : ""}
                         </span>
                         <span className="text-sm text-muted-foreground">
                           @{comment.author.username}
@@ -226,10 +326,66 @@ const PostCard = ({
                         <span className="text-sm text-muted-foreground">
                           {formatDistanceToNow(new Date(comment.createdAt))} ago
                         </span>
+                        {loggedInAs === comment.author.id && (
+                          <div className="flex space-x-1 ml-auto">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setEditingCommentId(comment.id);
+                                setEditedCommentContent(comment.content);
+                              }}
+                              className="text-muted-foreground hover:text-blue-500 p-1 h-6 cursor-pointer"
+                            >
+                              <EditIcon className="size-3" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteComment(comment.id)}
+                              className="text-muted-foreground hover:text-red-500 p-1 h-6 cursor-pointer"
+                            >
+                              <TrashIcon className="size-3" />
+                            </Button>
+                          </div>
+                        )}
                       </div>
-                      <p className="text-sm wrap-break-word">
-                        {comment.content}
-                      </p>
+                      {editingCommentId === comment.id ? (
+                        <div className="mt-1">
+                          <Textarea
+                            value={editedCommentContent}
+                            onChange={(e) =>
+                              setEditedCommentContent(e.target.value)
+                            }
+                            className="min-h-16 resize-none text-sm"
+                          />
+                          <div className="flex justify-end mt-1 space-x-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setEditingCommentId(null);
+                                setEditedCommentContent("");
+                              }}
+                              className="h-6 px-2 text-xs"
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={() => handleEditComment(comment.id)}
+                              disabled={!editedCommentContent.trim()}
+                              className="h-6 px-2 text-xs"
+                            >
+                              Save
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-sm wrap-break-word">
+                          {comment.content}
+                        </p>
+                      )}
                     </div>
                   </div>
                 ))}

@@ -20,7 +20,7 @@ export const generateMetadata = async ({
   if (!user) return;
 
   return {
-    title: `${user.name} ${user.surname}`,
+    title: `${user.name}${user.surname ? ` ${user.surname}` : ''}`,
     description: user.bio || `Check out ${user.username}'s profile in flow!`,
   };
 };

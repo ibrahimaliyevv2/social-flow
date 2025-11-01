@@ -16,12 +16,12 @@ const ImageUpload = ({ endpoint, onChange, value }: ImageUploadProps) => {
         <img
           src={value}
           alt="Upload"
-          className="rounded-md size-40 object-cover"
+          className="rounded-md size-40 object-cover p-1"
         />
         <button
           onClick={() => onChange("")}
           type="button"
-          className="absolute top-0 right-0 p-1 bg-red-500 rounded-full shadow-sm"
+          className="absolute top-0 right-0 p-2 bg-red-500 rounded-full shadow-sm cursor-pointer"
         >
           <XIcon className="size-4 text-white" />
         </button>

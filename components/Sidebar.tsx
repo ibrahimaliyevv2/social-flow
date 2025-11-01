@@ -28,7 +28,7 @@ const Sidebar = async () => {
 
               <div className="mt-4 space-y-1">
                 <h3 className="font-semibold">
-                  {user.name} {user.surname}
+                  {user.name}{user.surname ? ` ${user.surname}` : ''}
                 </h3>
                 <p className="text-sm text-muted-foreground">{user.username}</p>
               </div>

@@ -112,7 +112,7 @@ const ProfileContent = ({
                   <AvatarImage src={user.image ?? "/avatar.png"} />
                 </Avatar>
                 <h1 className="mt-4 text-2xl font-bold">
-                  {user.name} {user.surname}
+                  {user.name}{user.surname ? ` ${user.surname}` : ''}
                 </h1>
                 <p className="text-muted-foreground">@{user.username}</p>
                 <p className="mt-2 text-sm">{user.bio}</p>

@@ -215,4 +215,81 @@ export const deletePost = async (postId: string) => {
     console.error("Failed to delete post:", err);
     return { success: false, message: "Failed to delete post" };
   }
-}
+};
+
+export const updatePost = async (postId: string, content: string) => {
+  try {
+    const loggedInUserId = await getUserIdFromDB();
+    if (!loggedInUserId) return;
+
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+      select: { authorId: true },
+    });
+
+    if (!post) throw new Error("Post not found");
+    if (post.authorId !== loggedInUserId) throw new Error("Unauthorized - no edit permission");
+
+    await prisma.post.update({
+      where: { id: postId },
+      data: { content },
+    });
+
+    revalidatePath("/");
+    return { success: true };
+  } catch (err) {
+    console.error("Failed to update post:", err);
+    return { success: false, message: "Failed to update post" };
+  }
+};
+
+export const updateComment = async (commentId: string, content: string) => {
+  try {
+    const loggedInUserId = await getUserIdFromDB();
+    if (!loggedInUserId) return;
+
+    const comment = await prisma.comment.findUnique({
+      where: { id: commentId },
+      select: { authorId: true },
+    });
+
+    if (!comment) throw new Error("Comment not found");
+    if (comment.authorId !== loggedInUserId) throw new Error("Unauthorized - no edit permission");
+
+    await prisma.comment.update({
+      where: { id: commentId },
+      data: { content },
+    });
+
+    revalidatePath("/");
+    return { success: true };
+  } catch (err) {
+    console.error("Failed to update comment:", err);
+    return { success: false, message: "Failed to update comment" };
+  }
+};
+
+export const deleteComment = async (commentId: string) => {
+  try {
+    const loggedInUserId = await getUserIdFromDB();
+    if (!loggedInUserId) return;
+
+    const comment = await prisma.comment.findUnique({
+      where: { id: commentId },
+      select: { authorId: true },
+    });
+
+    if (!comment) throw new Error("Comment not found");
+    if (comment.authorId !== loggedInUserId) throw new Error("Unauthorized - no delete permission");
+
+    await prisma.comment.delete({
+      where: { id: commentId },
+    });
+
+    revalidatePath("/");
+    return { success: true };
+  } catch (err) {
+    console.error("Failed to delete comment:", err);
+    return { success: false, message: "Failed to delete comment" };
+  }
+};
