@@ -7,31 +7,29 @@ import { getUserIdFromDB } from "./user.action";
 
 export const getProfileByUsername = async (username: string) => {
     try {
-        const user = await prisma.user.findUnique({
-            where: {
-                username: username
-            },
-            select: {
-                id: true,
-                name: true,
-                surname: true,
-                username: true,
-                bio: true,
-                image: true,
-                location: true,
-                website: true,
-                createdAt: true,
-                _count: {
-                    select: {
-                        followers: true,
-                        following: true,
-                        posts: true
-                    }
-                }
-            }
-        });
+            const user = await prisma.user.findUnique({
+      where: { username: username },
+      select: {
+        id: true,
+        name: true,
+        surname: true,
+        username: true,
+        bio: true,
+        image: true,
+        location: true,
+        website: true,
+        createdAt: true,
+        _count: {
+          select: {
+            followers: true,
+            following: true,
+            posts: true,
+          },
+        },
+      },
+    });
 
-        return user;
+    return user;
     } catch (err) {
         console.log("Error occured while fetching user profile", err);
         throw new Error("Failed to fetch profile");

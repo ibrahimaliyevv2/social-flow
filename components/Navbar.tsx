@@ -24,7 +24,7 @@ const Navbar = async () => {
                 className="rounded-md object-contain"
               />
               <span className="text-xl font-bold text-primary font-mono tracking-wider">
-                Flow
+                SocialFlow
               </span>
             </Link>
           </div>
