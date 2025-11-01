@@ -154,7 +154,7 @@ const ProfileContent = ({
                   </SignInButton>
                 ) : isOwnProfile ? (
                   <Button
-                    className="w-full mt-4"
+                    className="w-full mt-4 cursor-pointer"
                     onClick={() => setShowEditDialog(true)}
                   >
                     <EditIcon className="size-4 mr-2" />
@@ -211,7 +211,7 @@ const ProfileContent = ({
             <TabsTrigger
               value="posts"
               className="flex items-center gap-2 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary
-               data-[state=active]:bg-transparent px-6 font-semibold"
+               data-[state=active]:bg-transparent px-6 font-semibold cursor-pointer"
             >
               <FileTextIcon className="size-4" />
               Posts
@@ -219,7 +219,7 @@ const ProfileContent = ({
             <TabsTrigger
               value="likes"
               className="flex items-center gap-2 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary
-               data-[state=active]:bg-transparent px-6 font-semibold"
+               data-[state=active]:bg-transparent px-6 font-semibold cursor-pointer"
             >
               <HeartIcon className="size-4" />
               Likes
