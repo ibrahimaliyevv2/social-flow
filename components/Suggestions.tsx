@@ -5,7 +5,7 @@ import { Avatar, AvatarImage } from "./ui/avatar";
 import FollowButton from "./FollowButton";
 
 const Suggestions = async () => {
-  const suggestedUsers = await getUserSuggestions();
+  const suggestedUsers = await getUserSuggestions().catch(() => []);
 
   if (suggestedUsers.length === 0)
     return (

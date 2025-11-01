@@ -8,7 +8,7 @@ import { currentUser } from "@clerk/nextjs/server";
 export default async function Home() {
   const user = await currentUser();
   const posts = await getPosts();
-  const loggedInUserId = await getUserIdFromDB();
+  const loggedInUserId = user ? await getUserIdFromDB() : null;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
