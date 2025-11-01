@@ -6,8 +6,8 @@ import { syncUser } from "../actions/user.action";
 import Image from "next/image";
 
 const Navbar = async () => {
-  const user = await currentUser(); // Bu POST request olur, server action-dır deyə
-  if (user) await syncUser();
+  const user = await currentUser().catch(() => null); // Bu POST request olur, server action-dır deyə
+  if (user) await syncUser().catch(() => {});
 
   return (
     <nav className="sticky top-0 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 z-50">

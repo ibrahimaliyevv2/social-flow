@@ -39,8 +39,8 @@ const ProfilePage = async ({
     await Promise.all([
       getUserPosts(user.id),
       getUserLikedPosts(user.id),
-      isFollowing(user.id),
-      getUserIdFromDB(),
+      isFollowing(user.id).catch(() => false),
+      getUserIdFromDB().catch(() => null),
     ]);
 
   return (
