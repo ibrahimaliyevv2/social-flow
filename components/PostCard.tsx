@@ -244,7 +244,7 @@ const PostCard = ({
           </div>
 
           {post.image && (
-            <div className="rounded-lg overflow-hidden">
+            <div className="rounded-lg overflow-hidden mt-2">
               <img // change to next Image component
                 src={post.image}
                 alt="Post content"

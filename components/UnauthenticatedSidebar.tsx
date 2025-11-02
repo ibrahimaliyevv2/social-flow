@@ -15,12 +15,12 @@ const UnAuthenticatedSidebar = () => (
           Login to access your profile and connect with others.
         </p>
         <SignInButton mode="modal">
-          <Button className="w-full" variant="outline">
+          <Button className="w-full cursor-pointer" variant="outline">
             Login
           </Button>
         </SignInButton>
         <SignUpButton mode="modal">
-          <Button className="w-full mt-2" variant="default">
+          <Button className="w-full mt-2 cursor-pointer" variant="default">
             Sign Up
           </Button>
         </SignUpButton>

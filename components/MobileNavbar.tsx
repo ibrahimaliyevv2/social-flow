@@ -33,7 +33,7 @@ function MobileNavbar() {
         variant="ghost"
         size="icon"
         onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-        className="mr-2"
+        className="mr-2 cursor-pointer"
       >
         <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
         <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -42,7 +42,12 @@ function MobileNavbar() {
 
       <Sheet open={showMobileMenu} onOpenChange={setShowMobileMenu}>
         <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" suppressHydrationWarning>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="cursor-pointer"
+            suppressHydrationWarning
+          >
             <MenuIcon className="h-5 w-5" />
           </Button>
         </SheetTrigger>
@@ -53,7 +58,7 @@ function MobileNavbar() {
           <nav className="flex flex-col space-y-4 mt-6">
             <Button
               variant="ghost"
-              className="flex items-center gap-3 justify-start"
+              className="flex items-center gap-3 justify-start cursor-pointer"
               asChild
             >
               <Link href="/">
@@ -66,7 +71,7 @@ function MobileNavbar() {
               <>
                 <Button
                   variant="ghost"
-                  className="flex items-center gap-3 justify-start"
+                  className="flex items-center gap-3 justify-start cursor-pointer"
                   asChild
                 >
                   <Link href="/notifications">
@@ -76,7 +81,7 @@ function MobileNavbar() {
                 </Button>
                 <Button
                   variant="ghost"
-                  className="flex items-center gap-3 justify-start"
+                  className="flex items-center gap-3 justify-start cursor-pointer"
                   asChild
                 >
                   <Link href="/profile">
@@ -87,7 +92,7 @@ function MobileNavbar() {
                 <SignOutButton>
                   <Button
                     variant="ghost"
-                    className="flex items-center gap-3 justify-start w-full"
+                    className="flex items-center gap-3 justify-start w-full cursor-pointer"
                   >
                     <LogOutIcon className="w-4 h-4" />
                     Logout
@@ -96,7 +101,7 @@ function MobileNavbar() {
               </>
             ) : (
               <SignInButton mode="modal">
-                <Button variant="default" className="w-full">
+                <Button variant="default" className="w-full cursor-pointer">
                   Sign In
                 </Button>
               </SignInButton>
