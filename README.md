@@ -1,4 +1,4 @@
-# Social Flow - Social Media Application
+# SocialFlow - Social Media Application
 
 A social media platform built with Next.js, featuring user authentication, posts, likes, comments, and user profiles.
 
